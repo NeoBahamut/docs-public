@@ -17,7 +17,7 @@ source : [https://gist.github.com/francoisromain/e28069c18ebe8f3244f8e4bf2af6b2c
 ## créer le répertoire du projet $PROJET
 
 ```bash
-/srv/script/project-create $PROJET
+/srv/scripts/project-create $PROJET
 ```
 
 ## Variables d'environnement : créer le fichier .env et l'alimenter
