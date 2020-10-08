@@ -1,4 +1,4 @@
-# Installation `dev`
+# Installation
 
 ## copie des script project-create et project-delete sous /srv/scripts
 

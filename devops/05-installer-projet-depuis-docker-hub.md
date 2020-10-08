@@ -1,4 +1,4 @@
-# Installation `prod`
+# Installation
 
 ## Créer le répertoire et le fichier .env du projet $PROJET
 
@@ -29,6 +29,15 @@ sudo nano /srv/scripts/${PROJET}-deploy
 ```
 
 ### contenu du fichier ${PROJET}-deploy
+
+```bash
+#!/bin/bash
+# ${PROJET}-deploy
+# deploie ${PROJET} depuis le docker hub
+cd /srv/www/${PROJET}
+docker-compose pull && docker-compose up -d
+cd -
+```
 
 ### ajouter les droits d'exécution
 
