@@ -167,8 +167,12 @@ docker stop `id`
 ### supprimer un container
 
 ```bash
-docker rm [-rf] `mon_container`
+docker rm [-flv] `mon_container`
 ```
+
+`-f` force
+`-l` supprime le lien
+`-v` supprime le volume associé
 
 ## entrer dans un conteneur
 
