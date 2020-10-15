@@ -105,7 +105,7 @@ docker run -d --env-file .env ubuntu:latest
 ### avec un réseau
 
 ```bash
-docker run -d --network[--net] <mon_reseau> ubuntu:latest
+docker run -d --network[--net] $MON_RESEAU ubuntu:latest
 ```
 
 ### avec un lien vers un autre conteneur : ajout dans /etc/hosts
@@ -205,7 +205,7 @@ docker exec mon_mysql sh -c 'exec mysqldump -pmdp matomo' > matomo.sql
 ### créer un volume
 
 ```bash
-docker volume create <mon_volume>
+docker volume create $MON_VOLUME
 ```
 
 ## DockerFile
@@ -228,19 +228,19 @@ bridge (172.17.0.0) = réseau par défaut
 ### Créer un réseau
 
 ```bash
-docker network create <mon_reseau>
+docker network create $MON_RESEAU
 ```
 
 ### Créer un réseau : spécifier le type (bridge par défaut)
 
 ```bash
-docker network create -d[--driver] bridge <mon_reseau>
+docker network create -d[--driver] bridge $MON_RESEAU
 ```
 
 ### Créer un réseau : spécifier le sous-réseau
 
 ```bash
-docker network create -d bridge --subnet 172.30.0.16 <mon_reseau>
+docker network create -d bridge --subnet 172.30.0.16 $MON_RESEAU
 ```
 
 ## Cache
@@ -250,7 +250,7 @@ Pour ne pas utiiser le cache, utiliser l'instruction `--no-cache`
 ### dans le build : pour toutes les instructions
 
 ```bash
-docker build --no-cache -t <mon_image>
+docker build --no-cache -t $MON_IMAGE
 ```
 
 ### dans le DockerFile : pour une instruction
