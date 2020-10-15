@@ -19,7 +19,7 @@ Commands: `attach, build, commit, cp, create, diff, events, exec, export, histor
 ### tirer une image (ou un repo)
 
 ```bash
-docker pull `une_image`
+docker pull $UNE_IMAGE
 ```
 
 pointe vers le DockerHub par défaut
@@ -29,7 +29,7 @@ l'image la plus light étant alpine : `docker pull alpine`
 ### créer une image
 
 ```bash
-docker commit -m "création d'une image" `n°_conteneur` `mon_image:v1.0`
+docker commit -m "création d'une image" $ID_CONTENEUR $MON_IMAGE:v1.0
 ```
 
 ### obtenir des infos sur une image
@@ -61,7 +61,7 @@ le . indique le répertoire
 ### Créer une image à partir d'un conteneur
 
 ```bash
-docker commit -m "commentaire du commit" `id_conteneur` `mon_image:v1.0` .
+docker commit -m "commentaire du commit" $ID_CONTENEUR $MON_IMAGE:v1.0 .
 ```
 
 ## lancer un conteneur
@@ -87,7 +87,7 @@ docker run -d -p 8088:80 --mount source=mon_volume,target=/usr/share/nginx/html 
 ### avec le volume d'un autre conteneur
 
 ```bash
-docker run -d --volumes-from `autre_conteneur` nginx:latest
+docker run -d --volumes-from $AUTRE_CONTENEUR nginx:latest
 ```
 
 ### avec une variable d'environnement
@@ -105,25 +105,25 @@ docker run -d --env-file .env ubuntu:latest
 ### avec un réseau
 
 ```bash
-docker run -d --network[--net] `mon_reseau` ubuntu:latest
+docker run -d --network[--net] <mon_reseau> ubuntu:latest
 ```
 
 ### avec un lien vers un autre conteneur : ajout dans /etc/hosts
 
 ```bash
-docker run -d --link `autre_conteneur` ubuntu:latest
+docker run -d --link $AUTRE_CONTENEUR ubuntu:latest
 ```
 
 ### avec ajout d'host (ex: machines physiques)
 
 ```bash
-docker run -d --add-host `mon_host:122.0.25.3` ubuntu:latest
+docker run -d --add-host $MON_HOST:$IP_HOST ubuntu:latest
 ```
 
 ### avec ajout de dns : ajout dans le resolve.conf
 
 ```bash
-docker run -d --dns `172.0.0.3` ubuntu:latest
+docker run -d --dns $IP_DNS ubuntu:latest
 ```
 
 ### un matomo lié à un mysql comme bdd
@@ -137,12 +137,12 @@ docker run -d -p 8088:80  --link mon_mysql:db -v mon_matomo:/var/www/html matomo
 ### inspecter un conteneur
 
 ```bash
-docker logs <nom_conteneur>
+docker logs $NOM_CONTENEUR
 ```
 
 ### lister les infos du conteneur
 
-docker inspect `mon_container`
+docker inspect $MON_CONTENEUR
 
 ### lister les containers actifs en local
 
@@ -161,13 +161,13 @@ docker ps -a
 copier/coller un id, puis
 
 ```bash
-docker stop `id`
+docker stop $ID_CONTENEUR
 ```
 
 ### supprimer un container
 
 ```bash
-docker rm [-flv] `mon_container`
+docker rm [-flv] $MON_CONTENEUR
 ```
 
 `-f` force
@@ -179,13 +179,13 @@ docker rm [-flv] `mon_container`
 ### en bash
 
 ```bash
-docker exec -it mon_matomo `bash`
+docker exec -it mon_matomo bash
 ```
 
 ### en psql
 
 ```bash
-docker exec -it mon_conteneur_bdd `psql`
+docker exec -it mon_conteneur_bdd psql
 ```
 
 ### lancer une commande dans le conteneur et récupérer le résultat en local (ex : un dump)
@@ -205,7 +205,7 @@ docker exec mon_mysql sh -c 'exec mysqldump -pmdp matomo' > matomo.sql
 ### créer un volume
 
 ```bash
-docker volume create `mon_volume`
+docker volume create <mon_volume>
 ```
 
 ## DockerFile
@@ -228,19 +228,19 @@ bridge (172.17.0.0) = réseau par défaut
 ### Créer un réseau
 
 ```bash
-docker network create `mon_reseau`
+docker network create <mon_reseau>
 ```
 
 ### Créer un réseau : spécifier le type (bridge par défaut)
 
 ```bash
-docker network create -d[--driver] bridge `mon_reseau`
+docker network create -d[--driver] bridge <mon_reseau>
 ```
 
 ### Créer un réseau : spécifier le sous-réseau
 
 ```bash
-docker network create -d bridge --subnet 172.30.0.16 `mon_reseau`
+docker network create -d bridge --subnet 172.30.0.16 <mon_reseau>
 ```
 
 ## Cache
@@ -250,7 +250,7 @@ Pour ne pas utiiser le cache, utiliser l'instruction `--no-cache`
 ### dans le build : pour toutes les instructions
 
 ```bash
-docker build --no-cache -t `mon_image`
+docker build --no-cache -t <mon_image>
 ```
 
 ### dans le DockerFile : pour une instruction

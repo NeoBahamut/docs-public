@@ -22,7 +22,7 @@ Le message de commit doit être structuré selon ce modèle :
 
 ## Fonctionnement
 
-### La commande `standard-version` va :
+### La commande [`standard-version`](https://github.com/conventional-changelog/standard-version) va
 
 * générer le `CHANGELOG.md` basé sur les différents commits,
 
@@ -40,7 +40,7 @@ npx standard-version
 git push --follow-tags upstream master
 ```
 
-### La commmande `conventional-github-releaser` va générer une realease sur GitHub basée sur les derniers commits 
+### La commmande [`conventional-github-releaser`](https://github.com/conventional-changelog/releaser-tools/tree/master/packages/conventional-github-releaser) va générer une realease sur GitHub basée sur les derniers commits
 
 * La présence d'un tag est nécessaire pour effectuer un release
 
@@ -50,7 +50,7 @@ git push --follow-tags upstream master
 CONVENTIONAL_GITHUB_RELEASER_TOKEN=<MY_TOKEN> npx conventional-github-releaser
 ```
 
-* Exporter le token dans le Path 
+* Exporter le token dans le Path
 
 ```bash
 export CONVENTIONAL_GITHUB_RELEASER_TOKEN=<MY_TOKEN>

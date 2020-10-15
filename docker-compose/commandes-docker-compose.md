@@ -21,7 +21,7 @@ docker-compose up [-d]
 ### à partir d'un autre fichier
 
 ```bash
-docker-compose -f `./mon-fichier.yml` up [–build]
+docker-compose -f ./mon-fichier.yml up [–build]
 ```
 
 `-f` précise le fichier
@@ -97,11 +97,11 @@ Deuxième ligne : les services
 ```bash
 services:
   service1:
-    container_name: `nom_conteneur1`
+    container_name: $NOM_CONTENEUR1
     |
     |
   service2:
-    container_name: `nom_conteneur2`
+    container_name: $NOM_CONTENEUR2
     |
     |
 ```
