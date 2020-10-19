@@ -16,7 +16,7 @@
 
 [07-administration-nom-de-domaine.md](https://github.com/NeoBahamut/docs-public/blob/master/devops/07-administration-nom-de-domaine.md)
 
-[08-tags-et-releases.md](https://github.com/NeoBahamut/docs-private/blob/master/devops/08-tags-et-releases.md)
+[08-tags-et-releases.md](https://github.com/NeoBahamut/docs-public/blob/master/devops/08-tags-et-releases.md)
 
 > Docker Compose
 
