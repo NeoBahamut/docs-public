@@ -47,7 +47,7 @@ docker images
 ### Créer une image à partir du [DockerFile](https://github.com/NeoBahamut/docs-public/blob/master/docker/commandes-docker.md#dockerfile)
 
 ```bash
-docker build -t `mon_image:v1.0` .
+docker build -t $MON_IAMGE:v1.0 .
 ```
 
 le . indique le répertoire
