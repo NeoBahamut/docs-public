@@ -26,12 +26,6 @@ pointe vers le DockerHub par défaut
 
 l'image la plus light étant alpine : `docker pull alpine`
 
-### créer une image
-
-```bash
-docker commit -m "création d'une image" $ID_CONTENEUR $MON_IMAGE:v1.0
-```
-
 ### obtenir des infos sur une image
 
 ```bash
