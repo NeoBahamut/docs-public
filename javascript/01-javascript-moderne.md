@@ -1,26 +1,40 @@
 # Etapes d'installs : de 'old-school' à 'moderne javascript'
 
-## old-school => v0.1.5 : un fichier index.html avec appel index.js et moment.min.js (sous /usr/shar/nginx/html sur le serveur)
+## old-school => v0.1.2 : un fichier index.html avec appel index.js et moment.min.js (sous /usr/shar/nginx/html sur le serveur)
 
 ### workspace : old-school
 
-```bash
+```json
 ./node_modules
   |
   |
-./src
-  index.html
-  index.js
-  moment.min.js (copié/collé de [moment.min.js](https://momentjs.com/downloads/moment.js))
+index.html
+index.js
+moment.min.js (copié/collé de [moment.min.js](https://momentjs.com/downloads/moment.js))
 docker-compose.yml
-    nginx-proxy
-    app
-      volumes
-        ./src:/usr/share/nginx/html
+  version: "3"
+  services:
+    app:
+      container_name: com_nicolaspetitot
+      image: nginx:alpine
+      environment:
+        VIRTUAL_HOST: ${URL}
+        LETSENCRYPT_HOST: ${URL}
+        LETSENCRYPT_EMAIL: ${EMAIL}
+      expose:
+        - 80
+      volumes:
+        - ./src:/usr/share/nginx/html
+      networks:
+        - nginx-proxy
+      restart: unless-stopped
+  networks:
+    nginx-proxy:
+      external: true
 package.json
 ```
 
-## +npm => v0.1.6 : install de moment.min.js via `npm` et appel dans node_module
+## +npm => v0.1.3 : install de moment.min.js via `npm` et appel dans node_module
 
 ### installer le module `moment`
 
@@ -38,31 +52,46 @@ rm ./src/moment.min.js
 
 ```bash
 /* ... */
-<script src="../node_modules/moment/min/moment.min.js"></script>
+<script src="node_modules/moment/min/moment.min.js"></script>
 /* ... */
 ```
 
 ### workspace : +npm
 
-```bash
+```json
 ./node_modules
   |
   moment
   |
-./src
-  index.html
-  index.js
+index.html
+index.js
+-moment.min.js(deleted)
 docker-compose.yml
-    nginx-proxy
-    app
-      volumes
-        ./src:/usr/share/nginx/html
+  version: "3"
+  services:
+    app:
+      container_name: com_nicolaspetitot
+      image: nginx:alpine
+      environment:
+        VIRTUAL_HOST: ${URL}
+        LETSENCRYPT_HOST: ${URL}
+        LETSENCRYPT_EMAIL: ${EMAIL}
+      expose:
+        - 80
+      volumes:
+        - ./src:/usr/share/nginx/html
+      networks:
+        - nginx-proxy
+      restart: unless-stopped
+  networks:
+    nginx-proxy:
+      external: true
 package.json
 ```
 
-## +build => v0.1.7 : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les install npm nécessaires
+## +build => v0.1.4 : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les install npm nécessaires
 
-## +webpack => v0.1.8 : install via `npm` de `webpack` et `webpack-cli`
+## +webpack => v0.1.5 : install via `npm` de `webpack` et `webpack-cli`
 
 ### installer `webpack`
 
@@ -72,7 +101,7 @@ npm i -D webpack webpack-cli
 
 ### workspace : +webpack
 
-```bash
+```json
 ./node_modules
   |
   moment
@@ -80,13 +109,27 @@ npm i -D webpack webpack-cli
   webpack
   webpack-cli
   |
-./src
-  index.html
-  index.js
+index.html
+index.js
 docker-compose.yml
-    nginx-proxy
-    app
-      volumes
-        ./src:/usr/share/nginx/html
+version: "3"
+  services:
+    app:
+      container_name: com_nicolaspetitot
+      image: nginx:alpine
+      environment:
+        VIRTUAL_HOST: ${URL}
+        LETSENCRYPT_HOST: ${URL}
+        LETSENCRYPT_EMAIL: ${EMAIL}
+      expose:
+        - 80
+      volumes:
+        - ./src:/usr/share/nginx/html
+      networks:
+        - nginx-proxy
+      restart: unless-stopped
+  networks:
+    nginx-proxy:
+      external: true
 package.json
 ```
