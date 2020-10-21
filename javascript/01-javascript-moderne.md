@@ -51,6 +51,8 @@ rm ./src/moment.min.js
 ### dans `index.html` effectuer l'appel de `moment.min.js` depuis `node_module`
 
 ```html
+index.hml
+
 /* ... */
 <script src="node_modules/moment/min/moment.min.js"></script>
 /* ... */
@@ -89,15 +91,23 @@ docker-compose.yml
 package.json
 ```
 
-## +build => v0.1.4 : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les install npm nécessaires
+## +webpack => v0.1.4 : build manuel de `index.js` avec `webpack`
 
-### installer `webpack`
+### installer [`webpack`](https://webpack.js.org/concepts/)
 
 ```bash
 npm i -D webpack webpack-cli
 ```
 
 ### compiler index.js avec `webpack`
+
+```bash
+./node_modules/.bin/webpack ./index.js --output-filename bundle.js
+```
+
+Cette commande génère le fichier `bundle.js` et son répertoire `dist`
+
+OU
 
 ```bash
 ./node_modules/.bin/webpack ./index.js -o dist
@@ -108,9 +118,11 @@ Cette commande génère le fichier `main.js` et son répertoire `dist`
 ### Dans le fichier html, remplacer l'appel à `index.js` par `dist/main.js`
 
 ```html
+index.hml
+
 /* ... */
 <!-- <script src="index.js"></script> -->
-<script src="dist/main.js"></script>
+<script src="dist/bundle.js"></script>
 /* ... */
 ```
 
@@ -119,7 +131,7 @@ Cette commande génère le fichier `main.js` et son répertoire `dist`
 ```json
 ./dist
   |
-  ├── main.js
+  ├── bundle.js
 ./node_modules
   |
   moment
@@ -152,4 +164,17 @@ version: "3"
 package.json
 ```
 
-## +webpack => v0.1.5 : install via `npm` de `webpack` et `webpack-cli`
+## +build => v0.1.? : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les install npm nécessaires
+
+### créer le fichier `webpack.config.js` à la racine
+
+```js
+webpack.config.js
+
+module.exports = {
+  entry: './index.js',
+  output: {
+    filename: 'bundle.js'
+  }
+}
+```
