@@ -192,6 +192,7 @@ Exécuter la commande suivante après avoir supprimé le répertoire `/dist` va 
 webpack.config.js
 - se base sur le __dirname
 - précise le répertoire de sortie
+- utilise le contenthash pour la gestion du cache
 -----------------
 const path = require("path");
 
@@ -201,12 +202,12 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "bundle.js",
+    filename: "[name].[contenthash].js",
   },
 };
 ```
 
-### rendre le fichier de sortie `bundle.js` lisible en développement en créant un fichier de configuration adhoc
+### optionnel : rendre le fichier de sortie `main.hash.js` lisible en développement en créant un fichier de configuration adhoc
 
 ```js
 webpack.dev.config.js
@@ -222,15 +223,30 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "bundle.js",
+    filename: "[name].[contenthash].js",
   },
   devtool: "source-map",
 };
 ```
 
+### optionnel : créer des scripts adhoc dans le package.json
+
+```json
+package.json
+------------
+/* ... */
+  "scripts": {
+    /* ... */
+    "build": "webpack",
+    "dev:build": "webpack --config webpack.dev.config.js",
+    /* ... */
+  },
+/* ... */
+```
+
 ### générer le fichier html à partir d'un template
 
-#### installer le plugin `html-webpack-plugin`
+#### installer le plugin [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin)
 
 ```bash
 npm i -D html-webpack-plugin
@@ -244,17 +260,10 @@ npm i -D html-webpack-plugin
   <head>
     <meta charset="utf-8" />
     <title><%= htmlWebPackPlugin.options.title %></title>
-    <script src="dist/bundle.js"></script>
   </head>
 
   <body class="bg-bg">
     <div id="root"></div>
-    <h1>nicolaspetitot.com</h1>
-    <h2>VPS expérimental</h2>
-
-    <p>
-      VPS à usage de formation sur le projet Camino de la Fabrique Numérique
-    </p>
   </body>
 </html>
 ```
@@ -273,7 +282,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "bundle.js",
+    filename: "[name].[contenthash].js",
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -283,6 +292,30 @@ module.exports = {
     }),
   ],
 };
+```
+
+#### modifier le fichier source `index.js`
+
+```js
+index.js
+--------
+/* ... */
+// Tester html-webpack-plugin : js -> html
+const h1 = document.createElement("h1");
+h1.textContent = "nicolaspetitot.com";
+
+const h2 = document.createElement("h2");
+h2.textContent = "VPS expérimental";
+
+const p = document.createElement("p");
+p.textContent =
+  "VPS à usage de formation sur le projet Camino de la Fabrique Numérique";
+
+const app = document.querySelector("#root");
+app.append(h1);
+app.append(h2);
+app.append(p);
+/* ... */
 ```
 
 #### modifier la source du volume dans le `docker-compose.yml` et relancer le docker-compose
@@ -298,19 +331,146 @@ module.exports = {
 docker-compose restart
 ```
 
-### créer des scripts adhoc dans le package.json
+#### supprimer le fichier `index.html` à la racine
 
-```json
-package.json
-------------
+```bash
+rm ./index.html
+```
+
+### optionnel : cleaner le répertoire `dist` après chaque build (ne garder que les fichiers issus du dernier build)
+
+#### installer le plugin [clean-webpack-plugin](https://github.com/johnagan/clean-webpack-plugin)
+
+```bash
+npm i -D clean-webpack-plugin
+```
+
+#### compléter le fichier `webpack.config.js`
+
+```js
+webpack.conf.js
+---------------
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+module.exports = {
+  entry: {
+    main: path.resolve(__dirname, "./index.js"),
+  },
+  output: {
+    path: path.resolve(__dirname, "./dist"),
+    filename: "[name].[contenthash].js",
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: "nicolaspetitot.com",
+      template: path.resolve(__dirname, "./template.html"),
+      filename: "index.html",
+    }),
+    new CleanWebpackPlugin(),
+  ],
+};
+```
+
+### Utiliser des `loaders`
+
+Le but est de pré-traiter, en utilisant les modules, les fichiers chargés tels que :
+
+- fichiers javascript classiques
+- images
+- css
+- compilateurs (Babel, TypeScript)
+
+#### Installer [Babel](https://babeljs.io/)
+
+```bash
+npm i -D babel-loader @babel/core @babel/preset-env @babel/preset-env @babel/plugin-proposal-class-properties
+```
+
+#### compléter le fichier `webpack.config.js` avec la propriété `module`
+
+```js
+webpack.conf.js
+---------------
 /* ... */
-  "scripts": {
-    /* ... */
-    "build": "webpack",
-    "dev:build": "webpack --config webpack.dev.config.js",
-    /* ... */
+  module: {
+    rules: [
+      // JavaScript
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
+      },
+    ],
   },
 /* ... */
 ```
 
-## +build => v0.1.? : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les install npm nécessaires
+#### tester l'interprétation d'ancien code
+
+```js
+index.js
+--------
+/* ... */
+// Tester du code ancien
+// créer une instance de classe sans constructeur
+class StartUp {
+  name = "camino";
+}
+
+const myStartUp = new StartUp();
+
+const p2 = document.createElement("p");
+p2.textContent = `${myStartUp.name} est top !`;
+
+app.append(p2);
+/* ... */
+```
+
+génère une erreur au build :
+
+```bash
+ERROR in ./index.js 26:7
+Module parse failed: Unexpected token (26:7)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+| // créer une instance de classe sans constructeur
+| class StartUp {
+>   name = "camino";
+| }
+```
+
+#### corriger l'erreur par l'ajout du fichier `.babelrc` et des options dans les règles du module
+
+```js
+.babelrc
+--------
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
+}
+```
+
+```js
+webpack.conf.js
+---------------
+/* ... */
+  module: {
+    rules: [
+      // JavaScript
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+          },
+        },
+      },
+    ],
+  },
+/* ... */
+```
+
+## +build => v0.1.? : builder le conteneur avec un DockerFile pour copier package.json et package-lock.json et effectuer les installations npm nécessaires
