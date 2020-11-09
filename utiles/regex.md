@@ -99,6 +99,8 @@ ex: les chiffres 3, 4, 5, 6 et 7
 - ]
 - \
 - ^
+- ?
+- \*
 
 ## groupement
 
@@ -121,3 +123,13 @@ ex: les chiffres 3, 4, 5, 6 et 7
 - $` -> insert ce qu'il y a avant le résultat
 - $' -> insert ce qu'il y a après le résultat
 - $$ -> insert le dollar
+
+### [objet RegExp](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/RegExp/n)
+
+```js
+var re = /(\w+)\s(\w+)/;
+var str = 'Jean Biche';
+str.replace(re, '$2, $1'); // "Biche, Jean"
+RegExp.$1; // "Jean"
+RegExp.$2; // "Biche"
+```
