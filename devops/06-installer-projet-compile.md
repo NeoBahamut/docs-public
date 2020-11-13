@@ -14,13 +14,20 @@ sudo nano /srv/scripts/project-delete
 
 source : [https://gist.github.com/francoisromain/e28069c18ebe8f3244f8e4bf2af6b2cb]
 
+## ajouter les droits d'exécution
+
+```bash
+sudo chmod +x /srv/scripts/project-create
+sudo chmod +x /srv/scripts/project-delete
+```
+
 ## créer le répertoire du projet $PROJET
 
 ```bash
 /srv/scripts/project-create $PROJET
 ```
 
-## Variables d'environnement : créer le fichier .env et l'alimenter
+## Variables d'environnement : alimenter le fichier .env
 
 ```bash
 sudo nano /srv/env/$PROJET/.env
@@ -32,14 +39,10 @@ sudo nano /srv/env/$PROJET/.env
 git remote add ${PROJET}-deploy ssh://git@$IP/srv/git/$PROJET.git
 ```
 
+## (re)rendre l'utilisateur git owner de /srv
+
 ```bash
 sudo chown -R git:users /srv
-```
-
-## déploiement sur la remote
-
-```bash
-git push ${PROJET}-deploy master
 ```
 
 ## configurer le hook
@@ -48,10 +51,14 @@ git push ${PROJET}-deploy master
 sudo nano /srv/git/$PROJET.git/hooks/post-receive
 ```
 
-### lancer docker-compose
-
-Par exemple, en fin de fichier :
+s'assurer de lancer docker-compose avc le fichier ad hoc, par exemple, en fin de fichier :
 
 ```bash
 docker-compose -f $DOCKER_COMPOSE_FILE up -d
+```
+
+## déploiement sur la remote : en local
+
+```bash
+git push ${PROJET}-deploy master
 ```

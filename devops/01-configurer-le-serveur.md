@@ -54,7 +54,7 @@ timedatectl
 ### Mises à jour automatiques
 
 ```bash
-apt-get install unattended-upgrades apt-listchanges
+sudo apt-get install unattended-upgrades apt-listchanges
 ```
 
 #### Editer 50unattended-upgrades
@@ -129,7 +129,7 @@ scp c:/.../id_rsa.pub $USER@$IP:~/.ssh/authorized_keys
 ssh $USER@$IP
 ```
 
-#### Interdire le connexions root en SSH
+#### Interdire les connexions root en SSH
 
 Sur le serveur, éditer le fichier `/etc/ssh/sshd_config`
 
