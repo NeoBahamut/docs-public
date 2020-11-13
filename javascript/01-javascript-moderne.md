@@ -504,3 +504,47 @@ WORKDIR /app
 # copie du répertoire /dist issu de la compilation précédente
 COPY --from=build-stage /app/dist ./app
 ```
+
+### workspace : final
+
+```json
+./dist
+  |
+  ├── index.html
+  ├── main.ab793889e4382725a7e8.js
+./node_modules
+  |
+  @babel
+  |
+  moment
+  |
+  webpack
+  webpack-cli
+  |
+.babelrc
+docker-compose.yml
+  version: "3"
+    services:
+      app:
+        container_name: com_nicolaspetitot
+        build: .
+        environment:
+          VIRTUAL_HOST: ${URL}
+          LETSENCRYPT_HOST: ${URL}
+          LETSENCRYPT_EMAIL: ${EMAIL}
+        expose:
+          - 80
+        volumes:
+          - ./dist:/usr/share/nginx/html
+        networks:
+          - nginx-proxy
+        restart: unless-stopped
+    networks:
+      nginx-proxy:
+        external: true
+Dockerfile
+index.js
+package.json
+template.html
+webpack.config.js
+```
