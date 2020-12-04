@@ -28,7 +28,7 @@
 
 > Javascript
 
-[01-javascript-moderne(tuto)](https://github.com/NeoBahamut/docs-public/blob/master/javascript/01-javascript-moderne.md)
+[01-Le Javascript Moderne(tuto)](https://github.com/NeoBahamut/docs-public/blob/master/javascript/01-Javascript-Moderne(tuto)/0-Le_langage_Javascript.md)
 
 [02-javascript-moderne(évolution)](https://github.com/NeoBahamut/docs-public/blob/master/javascript/02-javascript-moderne.md)
 
