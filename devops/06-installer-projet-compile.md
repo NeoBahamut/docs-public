@@ -51,7 +51,7 @@ sudo chown -R git:users /srv
 sudo nano /srv/git/$PROJET.git/hooks/post-receive
 ```
 
-s'assurer de lancer docker-compose avc le fichier ad hoc, par exemple, en fin de fichier :
+s'assurer de lancer docker-compose avec le fichier ad hoc, par exemple, en fin de fichier :
 
 ```bash
 docker-compose -f $DOCKER_COMPOSE_FILE up -d

@@ -1,45 +1,95 @@
 # Etapes d'installs : de 'old-school' à 'moderne javascript'
 
-## old-school => v0.1.2 : un fichier index.html avec appel index.js et moment.min.js (sous /usr/shar/nginx/html sur le serveur)
+## old-school : un fichier index.html avec appel index.js et moment.min.js (sous /usr/shar/nginx/html sur le serveur)
+
+### index.html
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dinausors</title>
+    <script src="moment.min.js"></script>
+    <script src="index.js"></script>
+  </head>
+
+  <body class="bg-bg">
+    <h1>Hello from HTML</h1>
+  </body>
+</html>
+```
+
+### index.js
+
+```js
+console.log("Hello from JS");
+console.log(moment().startOf("day").fromNow());
+```
+
+### moment.min.js
+
+copié/collé de [moment.min.js](https://momentjs.com/downloads/moment.js)
+
+```js
+//! moment.js
+//! version : 2.29.1
+//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
+//! license : MIT
+//! momentjs.com
+...
+```
+
+### docker-compose.local.yml (destiné au dev: tourne sur localhost)
+
+```yml
+version: "3"
+services:
+  app:
+    container_name: com_nicolaspetitot
+    image: nginx:alpine
+    environment:
+      VIRTUAL_HOST: ${URL}
+      LETSENCRYPT_HOST: ${URL}
+      LETSENCRYPT_EMAIL: ${EMAIL}
+    expose:
+      - 80
+    ports:
+      - 8080:80
+    volumes:
+      - .:/usr/share/nginx/html
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+networks:
+  nginx-proxy:
+    external: true
+```
 
 ### workspace : old-school
 
 ```json
-./node_modules
-  |
-  |
 index.html
 index.js
 moment.min.js (copié/collé de [moment.min.js](https://momentjs.com/downloads/moment.js))
-docker-compose.yml
-  version: "3"
-  services:
-    app:
-      container_name: com_nicolaspetitot
-      image: nginx:alpine
-      environment:
-        VIRTUAL_HOST: ${URL}
-        LETSENCRYPT_HOST: ${URL}
-        LETSENCRYPT_EMAIL: ${EMAIL}
-      expose:
-        - 80
-      volumes:
-        - ./src:/usr/share/nginx/html
-      networks:
-        - nginx-proxy
-      restart: unless-stopped
-  networks:
-    nginx-proxy:
-      external: true
-package.json
+docker-compose.local.yml
 ```
 
-## +npm => v0.1.3 : install de moment.min.js via `npm` et appel dans node_module
+## +npm : install de moment.min.js via `npm` et appel dans node_modules
 
-### installer le module `moment`
+### initialiser npm sur le projet => crée le fichier `package.json`
 
 ```bash
-npm install moment -P
+npm init
+```
+
+### installer le module `moment` :  mode production avec `--save-prod` ou `-P` ou par défaut 
+
+```bash
+    npm i moment
+<=> npm install moment
+<=> npm install moment --save-prod
+<=> npm install moment -P
 ```
 
 ### supprimer le fichier `moment.min.js` sous `./src`
@@ -52,6 +102,7 @@ rm ./src/moment.min.js
 
 ```html
 index.hml
+=========
 
 /* ... */
 <script src="node_modules/moment/min/moment.min.js"></script>
@@ -62,41 +113,49 @@ index.hml
 
 ```json
 ./node_modules
-  |
   moment
-  |
 index.html
 index.js
--moment.min.js(deleted)
-docker-compose.yml
-  version: "3"
-  services:
-    app:
-      container_name: com_nicolaspetitot
-      image: nginx:alpine
-      environment:
-        VIRTUAL_HOST: ${URL}
-        LETSENCRYPT_HOST: ${URL}
-        LETSENCRYPT_EMAIL: ${EMAIL}
-      expose:
-        - 80
-      volumes:
-        - ./src:/usr/share/nginx/html
-      networks:
-        - nginx-proxy
-      restart: unless-stopped
-  networks:
-    nginx-proxy:
-      external: true
+[-moment.min.js(deleted)]
+docker-compose.local.yml
 package.json
 ```
 
-## +webpack => v0.1.4 : build manuel de `index.js` avec `webpack`
+## +webpack : build manuel de `index.js` avec `webpack`
+
+### tenter d'importer `moment` avec `require` dans `index.js` (et supprimer la src depuis  index.html)
+
+```js
+index.js
+========
+
+var moment = require("moment");
+
+console.log("Hello from JS");
+console.log(moment().startOf("day").fromNow());
+```
+
+### dans `index.html` suprimer l'appel de `moment.min.js` depuis `node_module`
+
+```html
+index.hml
+=========
+
+/* ... */
+<!-- <script src="node_modules/moment/min/moment.min.js"></script> -->
+/* ... */
+```
 
 ### installer [`webpack`](https://webpack.js.org/concepts/)
 
 ```bash
 npm i -D webpack webpack-cli
+
+OU
+
+# la latest de webpack-cli fait planter !
+npm i -D webpack webpack-cli@4.1.0
+
 ```
 
 ### compiler index.js avec `webpack`
@@ -105,7 +164,7 @@ npm i -D webpack webpack-cli
 ./node_modules/.bin/webpack ./index.js --output-filename bundle.js
 ```
 
-Cette commande génère le fichier `bundle.js` et son répertoire `dist`
+Cette commande génère le fichier `bundle.js` et son répertoire `dist` (par défaut)
 
 OU
 
@@ -113,17 +172,44 @@ OU
 ./node_modules/.bin/webpack ./index.js -o dist
 ```
 
-Cette commande génère le fichier `main.js` et son répertoire `dist`
+Cette commande génère le fichier `main.js` (par défaut) et son répertoire `dist`
 
-### Dans le fichier html, remplacer l'appel à `index.js` par `dist/main.js`
+### Dans le fichier html, remplacer l'appel à `index.js` par `dist/bundle.js`
 
 ```html
 index.hml
+=========
 
 /* ... */
 <!-- <script src="index.js"></script> -->
 <script src="dist/bundle.js"></script>
 /* ... */
+```
+
+### Adapter la source dans le fichier du docker-compose (docker-compose.local.yml encore pour le moment en dev)
+
+```yml
+version: "3"
+services:
+  app:
+    container_name: com_nicolaspetitot
+    image: nginx:alpine
+    environment:
+      VIRTUAL_HOST: ${URL}
+      LETSENCRYPT_HOST: ${URL}
+      LETSENCRYPT_EMAIL: ${EMAIL}
+    expose:
+      - 80
+    ports:
+      - 8080:80
+    volumes:
+      - ./dist:/usr/share/nginx/html
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+networks:
+  nginx-proxy:
+    external: true
 ```
 
 ### workspace : +webpack
@@ -141,30 +227,11 @@ index.hml
   |
 index.html
 index.js
-docker-compose.yml
-version: "3"
-  services:
-    app:
-      container_name: com_nicolaspetitot
-      image: nginx:alpine
-      environment:
-        VIRTUAL_HOST: ${URL}
-        LETSENCRYPT_HOST: ${URL}
-        LETSENCRYPT_EMAIL: ${EMAIL}
-      expose:
-        - 80
-      volumes:
-        - ./src:/usr/share/nginx/html
-      networks:
-        - nginx-proxy
-      restart: unless-stopped
-  networks:
-    nginx-proxy:
-      external: true
+docker-compose.local.yml
 package.json
 ```
 
-## configurer webpack => v0.1.5
+## + config webpack : ajout du fichier `webpack.config.js`
 
 ### créer le fichier `webpack.config.js` à la racine
 
@@ -179,7 +246,7 @@ module.exports = {
 }
 ```
 
-Il est désormais possible de compiler index.js avec webpack sans indiquer de paramètre (le fichier de configuration par défaut étant webpack.config.js).
+Il est désormais possible de compiler index.js avec webpack sans indiquer de paramètre (le fichier de configuration par défaut étant webpack.config.js, le répertoire 'dist' est également par défaut).
 Exécuter la commande suivante après avoir supprimé le répertoire `/dist` va le recréer avec son contenu.
 
 ```bash
@@ -198,7 +265,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    main: path.resolve(__dirname, "./index.js"),
+    bundle: path.resolve(__dirname, "./index.js"),
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
@@ -207,19 +274,19 @@ module.exports = {
 };
 ```
 
-### optionnel : rendre le fichier de sortie `main.hash.js` lisible en développement en créant un fichier de configuration adhoc
+### optionnel : rendre le fichier de sortie `main.hash.js` "lisible" (non formaté) en développement en créant un fichier de configuration adhoc
 
 ```js
 webpack.dev.config.js
-- précise le mode 'development'
-- utilise l'outils de formatage 'source-map'
+- précise le mode 'development' (formate le fichier de sortie en lecture humaine)
+- utilise 'source-map' (les erreurs sont indiquées dans le source !)
 -----------------
 const path = require("path");
 
 module.exports = {
   mode: "development",
   entry: {
-    main: path.resolve(__dirname, "./index.js"),
+    bundle: path.resolve(__dirname, "./index.js"),
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
@@ -373,7 +440,21 @@ module.exports = {
 };
 ```
 
-### Utiliser des `loaders`
+### optionnel : tester l'app sur un server http autonome en localhost avec `http-server` (c'est magique !)
+
+#### installer http-server
+
+```bash
+npm i http-server
+```
+
+#### démarrer le serveur
+
+```bash
+npx http-server [/dist] # pour lancer le index.html compilé dans /dist, le répertoire par défaut étant ./public s'il existe ou ./ sinon
+```
+
+### Utiliser des [`loaders`](https://www.taniarascia.com/how-to-use-webpack/#modules-and-loaders)
 
 Le but est de pré-traiter, en utilisant les modules, les fichiers chargés tels que :
 
@@ -382,10 +463,16 @@ Le but est de pré-traiter, en utilisant les modules, les fichiers chargés tels
 - css
 - compilateurs (Babel, TypeScript)
 
-#### Installer [Babel](https://babeljs.io/)
+#### Installer le compiler Javascript [Babel](https://babeljs.io/)
 
 ```bash
-npm i -D babel-loader @babel/core @babel/preset-env @babel/preset-env @babel/plugin-proposal-class-properties
+npm i -D babel-loader @babel/core @babel/preset-env @babel/plugin-proposal-class-properties
+```
+
+OU
+
+```bash
+npm i -D babel-loader babel-core babel-preset-env @babel/plugin-proposal-class-properties
 ```
 
 #### compléter le fichier `webpack.config.js` avec la propriété `module`
@@ -438,6 +525,9 @@ You may need an appropriate loader to handle this file type, currently no loader
 | class StartUp {
 >   name = "camino";
 | }
+
+Add @babel/plugin-proposal-class-properties (https://git.io/vb4SL) to the 'plugins' section of your Babel config to enable transformation.
+
 ```
 
 #### corriger l'erreur par l'ajout du fichier `.babelrc` et des options dans les règles du module
